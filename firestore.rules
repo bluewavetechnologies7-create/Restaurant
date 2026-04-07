@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "armyprince7@gmail.com" || 
+         request.auth.token.email == "admin@restaurant.com" ||
+         request.auth.token.email == get(/databases/$(database)/documents/settings/admin).data.adminEmail);
+    }
+
+    // Settings
+    match /settings/{settingId} {
+      allow read: if true; // Publicly readable for login check
+      allow write: if isAdmin();
+    }
+
+    // Orders
+    match /orders/{orderId} {
+      allow read: if isAdmin();
+      allow create: if true; // Allow customers to place orders
+      allow update, delete: if isAdmin();
+    }
+
+    // Menu Items
+    match /menu_items/{itemId} {
+      allow read: if true; // Publicly readable
+      allow write: if isAdmin();
+    }
+    
+    // Users (for admin role check if needed later)
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId || isAdmin();
+    }
+  }
+}

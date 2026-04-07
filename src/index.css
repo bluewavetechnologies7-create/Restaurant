@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Playfair+Display:wght@500;700&family=Inter:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-arabic: "Cairo", sans-serif;
+  
+  --color-mud-ink: #1A120B;
+  --color-mud-earth: #7A1B1B;
+  --color-mud-clay: #C87800;
+  --color-mud-gold: #D4AF37;
+  --color-mud-sand: #FAF3E0;
+  
+  --color-primary-gold: #D4AF37;
+  --color-text-primary: #1A120B;
+  --color-text-secondary: #4A4036;
+  --color-background: #FAF3E0;
+}
+
+body {
+  background-color: #FAF3E0;
+  color: #1A1A1A;
+}

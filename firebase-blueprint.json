@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "orders": {
+      "title": "Order",
+      "description": "An order placed in the restaurant",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique order ID" },
+        "items": { "type": "string", "description": "Comma separated list of items" },
+        "amount": { "type": "number", "description": "Total order amount" },
+        "date": { "type": "string", "format": "date-time", "description": "ISO timestamp of the order" },
+        "source": { "type": "string", "enum": ["online", "offline"], "description": "Where the order came from" }
+      },
+      "required": ["id", "items", "amount", "date", "source"]
+    },
+    "menu_items": {
+      "title": "Menu Item",
+      "description": "An item on the restaurant menu",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": {
+          "type": "object",
+          "properties": {
+            "en": { "type": "string" },
+            "ar": { "type": "string" }
+          }
+        },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "image": { "type": "string" }
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Global application settings",
+      "type": "object",
+      "properties": {
+        "adminEmail": { "type": "string", "format": "email", "description": "The authorized administrator email address" }
+      },
+      "required": ["adminEmail"]
+    }
+  },
+  "firestore": {
+    "/orders/{orderId}": {
+      "schema": "orders",
+      "description": "Collection of all restaurant orders"
+    },
+    "/menu_items/{itemId}": {
+      "schema": "menu_items",
+      "description": "Collection of all menu items"
+    },
+    "/settings/{settingId}": {
+      "schema": "settings",
+      "description": "Global application settings"
+    }
+  }
+}
