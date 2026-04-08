@@ -891,7 +891,7 @@ const Menu = () => {
         {/* Menu Items Container */}
         <div className="max-w-full bg-white rounded-[60px] py-16 px-4 md:px-10 relative overflow-hidden shadow-sm border border-mud-earth/5">
           {/* Category Heading Image */}
-          <div className="relative h-72 md:h-[500px] mb-16 rounded-[40px] overflow-hidden shadow-2xl group/header">
+          <div className="relative h-64 sm:h-80 md:h-[400px] lg:h-[500px] mb-16 rounded-[40px] overflow-hidden shadow-2xl group/header">
             <img 
               src={CATEGORY_IMAGES[activeCategory]} 
               alt={`${activeCategory} Category - Mud Restaurant Menu`}
@@ -1206,11 +1206,24 @@ const AdminDashboard = () => {
     // Real-time orders listener with limit for performance
     const q = query(collection(db, "orders"), orderBy("date", "desc"), limit(50));
     const unsubscribe = onSnapshot(q, (snap) => {
-      const firestoreOrders = snap.docs.map(d => ({
-        id: d.id,
-        ...d.data(),
-        date: (d.data().date as Timestamp).toDate().toISOString()
-      }));
+      const firestoreOrders = snap.docs.map(d => {
+        const data = d.data();
+        let dateStr = new Date().toISOString();
+        if (data.date) {
+          if (typeof data.date.toDate === 'function') {
+            dateStr = data.date.toDate().toISOString();
+          } else if (data.date instanceof Date) {
+            dateStr = data.date.toISOString();
+          } else if (typeof data.date === 'string') {
+            dateStr = data.date;
+          }
+        }
+        return {
+          id: d.id,
+          ...data,
+          date: dateStr
+        };
+      });
       setOrders(firestoreOrders);
     }, (error) => {
       console.error("Orders listener error:", error);
@@ -1551,7 +1564,11 @@ const AdminDashboard = () => {
                       </div>
                       
                       <div className="flex-grow space-y-4">
-                        <p className="text-lg font-bold text-mud-ink leading-tight">{order.items}</p>
+                        <p className="text-lg font-bold text-mud-ink leading-tight">
+                          {Array.isArray(order.items) 
+                            ? order.items.map((item: any) => `${item.name?.ar || item.name} x${item.quantity}`).join(', ')
+                            : order.items}
+                        </p>
                         <div className="flex flex-wrap gap-3">
                           <span className={cn(
                             "text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-xl flex items-center gap-2",
@@ -2349,7 +2366,11 @@ const OrderSuccessModal = ({ order, onClose }: { order: Order | null; onClose: (
   const handleWhatsAppShare = async () => {
     if (!order) return;
 
-    const msg = `مرحباً! إليك فاتورتك من مطعم مُد 🧾\nرقم الطلب: ${order.orderId || order.id}\nالمجموع: SAR ${order.total}`;
+    const itemsText = order.items.map(item => 
+      `• ${item.name.ar} (${item.name.en}) x${item.quantity} = ${item.price * item.quantity} SAR`
+    ).join('\n');
+
+    const msg = `مرحباً! إليك فاتورتك من مطعم مُد 🧾\n\nرقم الطلب: ${order.orderId || order.id}\n\nالأصناف:\n${itemsText}\n\nالمجموع: SAR ${order.total}`;
 
     // 1. Try System Share (Best for Mobile)
     // This allows sharing the ACTUAL image file to WhatsApp

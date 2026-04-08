@@ -83,11 +83,14 @@ export default function ReportPage() {
       ? ["#", "رقم الطلب", "الأصناف", "التاريخ", "الوقت", "المبلغ", "المصدر"]
       : ["#", "Order ID", "Items", "Date", "Time", "Amount", "Source"];
     const rows = orders.map((o, i) => {
-      const d = o.date.toDate();
+      const d = o.date && typeof o.date.toDate === 'function' ? o.date.toDate() : new Date();
+      const itemsList = Array.isArray(o.items) 
+        ? o.items.map((item: any) => `${item.name?.ar || item.name} x${item.quantity}`).join(' | ')
+        : String(o.items || '');
       return [
         i + 1,
         o.orderId,
-        `"${o.items.replace(/"/g, '""')}"`,
+        `"${itemsList.replace(/"/g, '""')}"`,
         d.toLocaleDateString(isAr ? "ar-SA" : "en-GB"),
         d.toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" }),
         (o.amount || 0).toFixed(2),
@@ -112,12 +115,15 @@ export default function ReportPage() {
     const rows = orders
       .map(
         (o, i) => {
-          const d = o.date.toDate();
+          const d = o.date && typeof o.date.toDate === 'function' ? o.date.toDate() : new Date();
+          const itemsList = Array.isArray(o.items) 
+            ? o.items.map((item: any) => `${item.name?.ar || item.name} x${item.quantity}`).join(', ')
+            : String(o.items || '');
           return `
           <tr>
             <td>${i + 1}</td>
             <td>${o.orderId}</td>
-            <td>${o.items}</td>
+            <td>${itemsList}</td>
             <td>${d.toLocaleDateString(isAr ? "ar-SA" : "en-GB")}</td>
             <td>${d.toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" })}</td>
             <td><strong>${(o.amount || 0).toFixed(2)} SAR</strong></td>
@@ -289,12 +295,15 @@ export default function ReportPage() {
               </thead>
               <tbody>
                 {React.useMemo(() => orders.map((o, i) => {
-                  const d = o.date.toDate();
+                  const d = o.date && typeof o.date.toDate === 'function' ? o.date.toDate() : new Date();
+                  const itemsList = Array.isArray(o.items) 
+                    ? o.items.map((item: any) => `${item.name?.ar || item.name} x${item.quantity}`).join(', ')
+                    : String(o.items || '');
                   return (
                     <tr key={o.id} style={{ background: i % 2 === 0 ? "white" : "#faf7f0" }}>
                       <td style={S.td}>{i + 1}</td>
                       <td style={S.td}>{o.orderId}</td>
-                      <td style={S.td}>{o.items}</td>
+                      <td style={S.td}>{itemsList}</td>
                       <td style={S.td}>{d.toLocaleDateString(isAr ? "ar-SA" : "en-GB")}</td>
                       <td style={S.td}>{d.toLocaleTimeString(isAr ? "ar-SA" : "en-US", { hour: "2-digit", minute: "2-digit" })}</td>
                       <td style={{ ...S.td, fontWeight: "bold" }}>{(o.amount || 0).toFixed(2)} SAR</td>
