@@ -36,7 +36,7 @@ export const CATEGORY_IMAGES: { [key: string]: string } = {
   'Bakery': 'https://aicdn.picsart.com/2c61e962-dfe7-4459-8b85-843e8667192e.png',
   'Breakfast': 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?q=80&w=2070&auto=format&fit=crop',
   'Sandwiches': 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=2073&auto=format&fit=crop',
-  'Drinks': 'https://images.pexels.com/photos/10768378/pexels-photo-10768378.jpeg'
+  'Drinks': 'https://images.pexels.com/photos/11830227/pexels-photo-11830227.jpeg'
 };
 
 export const MENU_HERO_IMAGE = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop';
@@ -258,7 +258,7 @@ export const MENU_ITEMS: MenuItem[] = [
   { id: 'sw8', name: { en: 'Fava with Egg Sandwich', ar: 'ساندويتش فول بالبيض' }, price: 6, category: 'Sandwiches', image: 'https://images.unsplash.com/photo-1541518763669-27fef04b14ea?q=80&w=800&auto=format&fit=crop' },
 
   // --- Drinks (المشروبات) ---
-  { id: 'dr1', name: { en: 'Tea', ar: 'شاي' }, price: 1, category: 'Drinks', image: 'https://images.pexels.com/photos/10768378/pexels-photo-10768378.jpeg' },
+  { id: 'dr1', name: { en: 'Tea', ar: 'شاي' }, price: 1, category: 'Drinks', image: 'https://images.pexels.com/photos/11830227/pexels-photo-11830227.jpeg' },
   { id: 'dr2', name: { en: 'Coffee', ar: 'قهوة' }, price: 2, category: 'Drinks', image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800&auto=format&fit=crop' },
   { id: 'dr3', name: { en: 'Nescafe', ar: 'نسكافيه' }, price: 2, category: 'Drinks', image: 'https://images.unsplash.com/photo-1541167760496-162955ed8a9f?q=80&w=800&auto=format&fit=crop' },
 ];

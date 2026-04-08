@@ -165,6 +165,14 @@ const useSEO = (title: string, description: string) => {
 
 // --- Components ---
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -363,11 +371,11 @@ const Footer = () => {
           <ul className="space-y-3 text-sm text-mud-sand/70">
             <li className="flex items-center gap-2">
               <MapPin size={16} className="text-mud-gold" /> 
-              {isAr ? '123 طريق التراث، مدينة الطعام' : '123 Heritage Way, Food City'}
+              {isAr ? 'مربع 23، الجامعة الإسلامية بالمدينة المنورة' : 'Block 23, Islamic University of Madinah'}
             </li>
             <li className="flex items-center gap-2">
               <Phone size={16} className="text-mud-gold" /> 
-              +1 234 567 890
+              +966549569350
             </li>
           </ul>
         </div>
@@ -426,7 +434,7 @@ const Home = () => {
       id: '3',
       name: { en: 'Aromatic Tea', ar: 'شاي عطري' },
       description: { en: 'Traditional brewed tea with a blend of aromatic spices.', ar: 'شاي مخمر تقليدي مع مزيج من التوابل العطرية.' },
-      image: 'https://images.pexels.com/photos/29475550/pexels-photo-29475550.jpeg',
+      image: 'https://images.pexels.com/photos/11830227/pexels-photo-11830227.jpeg',
       price: '5'
     }
   ];
@@ -617,7 +625,6 @@ const Home = () => {
                     alt={`${translate(dish.name)} - Authentic Yemeni Dish`} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     referrerPolicy="no-referrer"
-                    loading="lazy"
                   />
                   <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full font-bold text-mud-earth shadow-lg">
                     {dish.price} SAR
@@ -886,12 +893,8 @@ const Menu = () => {
             <img 
               src={CATEGORY_IMAGES[activeCategory]} 
               alt={`${activeCategory} Category - Mud Restaurant Menu`}
-              className={cn(
-                "w-full h-full transition-transform duration-1000",
-                activeCategory === 'Drinks' ? "object-contain bg-black/10" : "object-cover group-hover/header:scale-105"
-              )}
+              className="w-full h-full transition-transform duration-1000 object-cover group-hover/header:scale-105"
               referrerPolicy="no-referrer"
-              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-mud-ink/90 via-mud-ink/30 to-transparent flex items-end p-8 md:p-16">
               <div className="space-y-2">
@@ -2097,7 +2100,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     </div>
   );
   
-  if (!user) return null;
+  if (!user || !isAdmin) return (
+    <div className="min-h-screen flex items-center justify-center bg-mud-sand">
+      <div className="w-12 h-12 border-4 border-mud-earth border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
   
   return <>{children}</>;
 };
@@ -2649,6 +2656,8 @@ const Cart = () => {
 
 // --- Main App ---
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 export default function App() {
   const [language, setLanguage] = useState<Language>('en');
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -2716,27 +2725,48 @@ export default function App() {
 
   const clearCart = () => setCart([]);
 
+  useEffect(() => {
+    // Pre-load category images for instant switching
+    Object.values(CATEGORY_IMAGES).forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+
+    // Pre-load featured dishes images
+    [
+      'https://images.pexels.com/photos/29177376/pexels-photo-29177376.jpeg',
+      'https://media.istockphoto.com/id/1400980767/photo/ham-sandwich-with-cheese-lettuce-and-tomato.jpg?b=1&s=612x612&w=0&k=20&c=UKgVkjyFqZJN7VWyA4yxZBIJ335KLo7wJo9bNV-bvGw=',
+      'https://images.pexels.com/photos/11830227/pexels-photo-11830227.jpeg'
+    ].forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  }, []);
+
   return (
     <AuthContext.Provider value={{ user, loading, isAdmin, login, resetPassword, logout }}>
       <LanguageContext.Provider value={{ language, lang: language, setLanguage, t, translate }}>
         <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}>
-          <Router>
-            <div className={cn("min-h-screen", language === 'ar' ? "font-arabic" : "font-sans")} dir={language === 'ar' ? "rtl" : "ltr"}>
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/menu" element={<Menu />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-                <Route path="/admin/reports" element={<ProtectedRoute><ReportPage /></ProtectedRoute>} />
-                <Route path="/admin-setup" element={<ProtectedRoute><AdminSetup /></ProtectedRoute>} />
-              </Routes>
-              <Footer />
-              <Cart />
-              <BackToTop />
-            </div>
-          </Router>
+          <ErrorBoundary>
+            <Router>
+              <ScrollToTop />
+              <div className={cn("min-h-screen", language === 'ar' ? "font-arabic" : "font-sans")} dir={language === 'ar' ? "rtl" : "ltr"}>
+                <Navbar />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/menu" element={<Menu />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/admin/reports" element={<ProtectedRoute><ReportPage /></ProtectedRoute>} />
+                  <Route path="/admin-setup" element={<ProtectedRoute><AdminSetup /></ProtectedRoute>} />
+                </Routes>
+                <Footer />
+                <Cart />
+                <BackToTop />
+              </div>
+            </Router>
+          </ErrorBoundary>
         </CartContext.Provider>
       </LanguageContext.Provider>
     </AuthContext.Provider>
